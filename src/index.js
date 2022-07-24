@@ -1,20 +1,28 @@
-import React, { StrictMode } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import categoriesReducer from './reducers/categoriesReducer';
 import cartReducer from './reducers/cartReducer';
 import categoryReducer from './reducers/categoryReducer';
 import currencyReducer from './reducers/currencyReducer';
 import currentCurrencyReducer from './reducers/currentCurrencyReducer'
 import overlayReducer from './reducers/overlayReducer';
-import quantityReducer from './reducers/quantityReducer';
 import attributeReducer from './reducers/attributeReducer';
 import locationReducer from './reducers/locationReducer';
+import storage from 'redux-persist/lib/storage'
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore, persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER, } from 'redux-persist'
 
 
 
@@ -27,7 +35,7 @@ export const CURRENCIES = gql`
 }
 `;
 
-// needs "id" (input probs)
+
 export const PRODUCT = gql`
  query GetProduct($id: String!) {
   product(id: $id) {
@@ -51,6 +59,7 @@ export const PRODUCT = gql`
         label
         symbol
       }
+      amount
     }
     brand
   }
@@ -90,10 +99,18 @@ export const CATEGORIES = gql`
   }
 `;
 
-// ARGUMENT: "CategoryInput"
+export const CATEGORYINPUT = gql`
+ query GetCategoryInput {
+  categoryinput {
+    title
+  }
+}
+`;
+
+// INPUT: "CategoryInput"
 export const CATEGORY = gql`
- query GetCategory {
-  category {
+ query GetCategory($input: CategoryInput) {
+  category(input: $input) {
     name
     products {
       id
@@ -130,25 +147,47 @@ const client = new ApolloClient({
 });
 
 
-const store = configureStore({
-  reducer: {
+
+
+const rootReducer = combineReducers({
+    currentCategory: categoryReducer,
     storeCategories: categoriesReducer,
     cartItems: cartReducer,
-    currentCategory: categoryReducer,
     currencyItems: currencyReducer,
     currentCurrency: currentCurrencyReducer,
     overlayStatus: overlayReducer,
-    quantitySet: quantityReducer,
     checkStatus: attributeReducer,
-    locationCart: locationReducer,
-  }
+    locationCart: locationReducer
 })
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['currentCategory', 'currentCurrency']
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+const store = configureStore({
+  reducer: persistedReducer,
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+})
+
+let persistor = persistStore(store)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ApolloProvider client={client}>
   <Provider store={store}>
-    <App />
+    <PersistGate persistor={persistor}>
+      <App />
+    </PersistGate>
   </Provider>
   </ApolloProvider>
 );

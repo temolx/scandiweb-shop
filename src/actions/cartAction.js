@@ -5,19 +5,37 @@ export const addToCart = (item) => {
     }
 }
 
-export const setQuantity = (quantity) => { // stores quantity and id of an item with that quantity
+export const removeFromCart = (itemID, itemIndex) => {
     return {
-        type: 'SET_QUANITITY',
-        payload: quantity
+        type: 'REMOVE',
+        payload: {
+            itemID: itemID,
+            itemIndex: itemIndex
+        }
     }
 }
 
-export const addQuantity = (quantity) => {
+export const increment = (itemID, itemIndex) => {
     return {
-        type: 'ADD_QUANITITY',
-        payload: quantity
+        type: 'INCREMENT',
+        payload: {
+            itemID: itemID,
+            itemIndex: itemIndex
+        }
     }
 }
+
+export const decrement = (itemID, itemIndex) => {
+    return {
+        type: 'DECREMENT',
+        payload: {
+            itemID: itemID,
+            itemIndex: itemIndex
+        }
+    }
+}
+
+// --------------------------------
 
 export const addLocation = (location) => {
     return {
@@ -25,6 +43,10 @@ export const addLocation = (location) => {
         payload: location
     }
 }
+
+
+// --------------------------------
+
 
 export const checkAttribute = (attributeData) => {
     return {
@@ -37,5 +59,22 @@ export const addAttribute = (attributeData) => {
     return {
         type: 'ADD_ATTRIBUTE',
         payload: attributeData
+    }
+}
+
+export const newAttributeSet = (attributeData) => {
+    return {
+        type: 'SET_NEW_ATTRIBUTES',
+        payload: attributeData
+    }
+}
+
+export const removeAttribute = (itemID, itemIndex) => {
+    return {
+        type: 'REMOVE_ATTRIBUTE',
+        payload: {
+            itemID: itemID,
+            itemIndex: itemIndex
+        }
     }
 }

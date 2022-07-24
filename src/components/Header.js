@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import logo from '../images/logo.svg'
-import dollar from '../images/dollar.svg'
 import downArrow from '../images/downArrow.svg'
 import cartIcon from '../images/cartIconBlack/Vector-2.svg'
 import cartIcon2 from '../images/cartIconBlack/Vector.svg'
@@ -44,10 +43,6 @@ class Header extends Component {
     currencySymbol: "$",
   }
 
-  componentDidUpdate() {
-    console.log('locationCart? : ' + this.props.locationCart);
-  }
-
   handleCategory = (cagegoryIndex, name) => {
     // dispatching...
     this.props.categoryAction(cagegoryIndex, name);
@@ -72,11 +67,14 @@ class Header extends Component {
   setCurrency = (currencyIndex, symbol) => {
     this.props.currentCurrencyAction(currencyIndex);
 
+    // *note: close currencies on select - DONE.
     this.setState(() => {
       return {
-        currencySymbol: symbol
+        currencySymbol: symbol,
+        currenciesVisible: false
       }
     })
+
   }
 
   showCart = () => {
@@ -106,7 +104,7 @@ class Header extends Component {
       <nav>
         <ul>
           {this.props.categories.map((category, index) => (
-            <li key={category.id} onClick={() => this.handleCategory(index, category.name)} className={this.props.category.name === category.name ? 'categoryTitle activeCategory' : 'categoryTitle'} >{ category.name }</li>
+            <Link to="/" key={ category.name }><li onClick={() => this.handleCategory(index, category.name)} className={this.props.category.name === category.name ? 'categoryTitle activeCategory' : 'categoryTitle'}>{ category.name }</li></Link>
           ))}
           <Link to="/"><li className='logo'>
             <img src={logo} alt="logo" />
@@ -120,13 +118,13 @@ class Header extends Component {
           <div className="navIcons">
             <li className='currency-container' onMouseEnter={this.showCurrencies} onMouseLeave={this.hideCurrencies}>
               <div className="currency-icons">
-                <h3 className='current-currency'>{ this.state.currencySymbol }</h3>
+                <h3 className='current-currency'>{ this.props.currencies.length !== 0 ? this.props.currencies[this.props.currentCurrency].symbol : this.state.currencySymbol }</h3>
                 <img src={downArrow} alt="dollar sign down arrow icon" className={!this.state.currenciesVisible ? 'dollar-arrow' : 'dollar-arrow dollar-arrow-active'} />
               </div>
 
               {this.state.currenciesVisible ? <ul className="currency-options">
                 {this.props.currencies.map((currency, currencyIndex) => (
-                  <li onClick={() => this.setCurrency(currencyIndex, currency.symbol)}>{ currency.symbol + " " + currency.label}</li>
+                  <li onClick={() => this.setCurrency(currencyIndex, currency.symbol)} key={ currency.symbol }>{ currency.symbol + " " + currency.label}</li>
                 ))}
               </ul> : ''}
             </li>
@@ -136,12 +134,12 @@ class Header extends Component {
               <img src={cartIcon2}  alt="cart icon" />
               <img src={cartIcon} alt="cart icon" />
               <img src={cartIcon} alt="cart icon" />
-              {this.props.cartItems.length !== 0 ? <div className='cart-quantity'>{ this.props.cartItems.length }</div> : ''}
+              {this.props.cartItems.length !== 0 ? <div className='cart-quantity'>{ this.props.cartItems.reduce((prev, current) => prev + current.quantity, 0) }</div> : ''}
             </li></Link>
 
             {this.props.locationCart !== '/cart' ?
             <div className="dropdown-container">
-              {this.state.cartVisible || this.props.overlayStatus ? <DropdownCart /> : ''}
+              {this.props.overlayStatus && this.props.cartItems.length ? <DropdownCart /> : ''}
             </div> : ''}
           </div>
 
