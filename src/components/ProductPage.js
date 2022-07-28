@@ -159,7 +159,8 @@ selectAttribute = (currentIndex, attributeID, attributeIndex, attributeValue) =>
                 ))}
               </div>
               <div className='productImage-info-container'>
-                <img src={this.state.productData.gallery && this.state.productData.gallery[this.state.imageIndex]} alt="product" className='productImage-info' />
+                {!this.state.productData.inStock ? <h1 className='stock-product'>Out of stock</h1> : ''}
+                <div className={!this.state.productData.inStock ? 'stock-bg-product productImage-info' : 'productImage-info'}><img src={this.state.productData.gallery && this.state.productData.gallery[this.state.imageIndex]} alt="product" className='productImage-info' /></div>
               </div>
             </div>
 

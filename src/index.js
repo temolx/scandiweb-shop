@@ -70,31 +70,7 @@ export const CATEGORIES = gql`
   query GetCategories {
     categories {
       name
-      products {
-          id
-          name
-          inStock
-          gallery
-          description
-          category
-          attributes {
-            id
-            name
-            type
-            items {
-              displayValue
-              value
-            }
-          }
-          prices {
-            currency {
-              label
-              symbol
-            }
-            amount
-          }
-          brand
-      }
+
     }
   }
 `;

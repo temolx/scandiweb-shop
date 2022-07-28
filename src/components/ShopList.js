@@ -45,7 +45,7 @@ class ShopList extends Component {
     request('http://localhost:4000/graphql', CATEGORY, {
       input: { title: this.props.category.name }
     }).then((data) => {
-      // console.log(data.category);
+      console.log(data.category);
 
       this.setState(() => {
         return {
@@ -60,7 +60,7 @@ class ShopList extends Component {
       request('http://localhost:4000/graphql', CATEGORY, {
         input: { title: this.props.category.name }
       }).then((data) => {
-        // console.log(data.category);
+        console.log(data.category);
 
         this.setState(() => {
           return {

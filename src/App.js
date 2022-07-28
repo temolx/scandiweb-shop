@@ -31,7 +31,7 @@ class App extends Component {
   componentDidMount() {
         request('http://localhost:4000/graphql', CATEGORIES).then((data) => {
             this.props.setCategories(data.categories);
-            // console.log(data.category);
+            console.log(data.categories);
           })
 
         request('http://localhost:4000/graphql', CURRENCIES).then((data) => {
