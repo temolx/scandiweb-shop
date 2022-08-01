@@ -13,6 +13,11 @@ import { hideOverlay } from '../actions/overlayAction'
 import logoElement1 from '../images/logoElement1.svg'
 import logoElement2 from '../images/logoElement2.svg'
 import logobg from '../images/logo-bg.svg'
+import { setCurrencies } from '../actions/currencyAction';
+import { setCategories } from '../actions/categoriesAction';
+import { request } from 'graphql-request';
+import { CATEGORIES } from '..'
+import { CURRENCIES } from '..'
 
 const mapStateToProps = (props) => {
   return {
@@ -31,7 +36,9 @@ const mapDispatchToProps = () => {
     categoryAction,
     currentCurrencyAction,
     showOverlay,
-    hideOverlay
+    hideOverlay,
+    setCategories,
+    setCurrencies
   }
 }
 
@@ -42,6 +49,20 @@ class Header extends Component {
     cartVisible: false,
     currencySymbol: "$",
   }
+
+  componentDidMount() {
+    request('http://localhost:4000/graphql', CATEGORIES).then((data) => {
+        this.props.setCategories(data.categories);
+        // console.log(data.categories);
+      })
+
+    request('http://localhost:4000/graphql', CURRENCIES).then((data) => {
+        this.props.setCurrencies(data.currencies);
+        // console.log(data.currencies);
+      })
+}
+
+
 
   handleCategory = (cagegoryIndex, name) => {
     // dispatching...
